@@ -1,22 +1,27 @@
 using Microsoft.EntityFrameworkCore;
-using ProvaPub.Repository;
+using Microsoft.Extensions.DependencyInjection;
+using ProvaPub.Infrastructure;
+using ProvaPub.Interfaces;
 using ProvaPub.Services;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<RandomService>();
-builder.Services.AddDbContext<TestDbContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("ctx")));
+builder.Services.AddScoped<IPaymentFactory, PaymentFactory>();
+builder.Services.AddScoped<IPaginationService, PaginationService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddSingleton<IRandomService, RandomService>();
+builder.Services.AddDbContext<TestDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ctx")));
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
